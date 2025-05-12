@@ -13,6 +13,22 @@ class LedgerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Update Person
+  void updatePerson(int index, String name) {
+    final person = _box.getAt(index);
+    if (person != null) {
+      person.name = name;
+      person.save(); // important
+      notifyListeners();
+    }
+  }
+
+  // Delete Person
+  void deletePerson(int index) {
+    _box.deleteAt(index);
+    notifyListeners();
+  }
+
   void addTransaction(int index, Transaction tx) {
     final person = _box.getAt(index);
     if (person != null) {
@@ -22,8 +38,23 @@ class LedgerProvider with ChangeNotifier {
     }
   }
 
-  void deletePerson(int index) {
-    _box.deleteAt(index);
-    notifyListeners();
+  // Update Transaction
+  void updateTransaction(int personIndex, int transactionIndex, Transaction tx) {
+    final person = _box.getAt(personIndex);
+    if (person != null) {
+      person.transactions[transactionIndex] = tx;
+      person.save(); // important
+      notifyListeners();
+    }
+  }
+
+  // Delete Transaction
+  void deleteTransaction(int personIndex, int transactionIndex) {
+    final person = _box.getAt(personIndex);
+    if (person != null) {
+      person.transactions.removeAt(transactionIndex);
+      person.save(); // important
+      notifyListeners();
+    }
   }
 }
