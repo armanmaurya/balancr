@@ -186,54 +186,84 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Ledger Book')),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListView.builder(
-          itemCount: ledger.people.length,
-          itemBuilder: (ctx, i) {
-            final person = ledger.people[i];
-            return PersonCard(
-              person: person,
-              onTap: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    transitionDuration: const Duration(milliseconds: 300),
-                    reverseTransitionDuration: const Duration(
-                      milliseconds: 300,
+        child: ledger.people.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.people_outline,
+                      size: 100,
+                      color: Colors.grey.shade400,
                     ),
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return TransactionScreen(index: i);
-                    },
-                    transitionsBuilder: (
-                      context,
-                      animation,
-                      secondaryAnimation,
-                      child,
-                    ) {
-                      final slideIn = Tween<Offset>(
-                        begin: const Offset(1.0, 0.0), // From right
-                        end: Offset.zero,
-                      ).chain(CurveTween(curve: Curves.ease));
+                    const SizedBox(height: 20),
+                    const Text(
+                      'No Persons Added Yet',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Add a person to get started!',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                itemCount: ledger.people.length,
+                itemBuilder: (ctx, i) {
+                  final person = ledger.people[i];
+                  return PersonCard(
+                    person: person,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 300),
+                          reverseTransitionDuration: const Duration(
+                            milliseconds: 300,
+                          ),
+                          pageBuilder: (context, animation, secondaryAnimation) {
+                            return TransactionScreen(index: i);
+                          },
+                          transitionsBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
+                            final slideIn = Tween<Offset>(
+                              begin: const Offset(1.0, 0.0), // From right
+                              end: Offset.zero,
+                            ).chain(CurveTween(curve: Curves.ease));
 
-                      final slideOut = Tween<Offset>(
-                        begin: Offset.zero,
-                        end: const Offset(-1.0, 0.0), // To left
-                      ).chain(CurveTween(curve: Curves.ease));
+                            final slideOut = Tween<Offset>(
+                              begin: Offset.zero,
+                              end: const Offset(-1.0, 0.0), // To left
+                            ).chain(CurveTween(curve: Curves.ease));
 
-                      return SlideTransition(
-                        position: animation.drive(slideIn),
-                        child: SlideTransition(
-                          position: secondaryAnimation.drive(slideOut),
-                          child: child,
+                            return SlideTransition(
+                              position: animation.drive(slideIn),
+                              child: SlideTransition(
+                                position: secondaryAnimation.drive(slideOut),
+                                child: child,
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
-                  ),
-                );
-              },
-              onEdit: () => _showEditPersonDialog(context, i),
-              onDelete: () => _showDeletePersonDialog(context, i),
-            );
-          },
-        ),
+                    onEdit: () => _showEditPersonDialog(context, i),
+                    onDelete: () => _showDeletePersonDialog(context, i),
+                  );
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddPersonDialog(context),
