@@ -20,7 +20,7 @@ class TransactionScreen extends StatelessWidget {
     final person = ledger.people[index];
     final isEditing = transactionIndex != null;
     final transaction =
-        isEditing ? person.transactions[transactionIndex!] : null;
+        isEditing ? person.transactions[transactionIndex] : null;
 
     final amountController = TextEditingController(
       text: isEditing ? transaction!.amount.toString() : '',
@@ -163,7 +163,7 @@ class TransactionScreen extends StatelessWidget {
                               if (updatedAmount != null && updatedAmount > 0) {
                                 ledger.updateTransaction(
                                   index,
-                                  transactionIndex!,
+                                  transactionIndex,
                                   Transaction(
                                     amount: updatedAmount,
                                     isGiven: transaction!.isGiven,
@@ -182,7 +182,7 @@ class TransactionScreen extends StatelessWidget {
                             onPressed: () {
                               ledger.deleteTransaction(
                                 index,
-                                transactionIndex!,
+                                transactionIndex,
                               );
                               Navigator.of(ctx).pop();
                             },

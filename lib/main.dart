@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ledger Book',
+      title: 'Balancr',
       themeMode: ThemeMode.system,
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,

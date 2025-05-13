@@ -28,6 +28,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _skipOnboarding() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_completed', true);
+    if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/dashboard');
   }
 
@@ -66,7 +67,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Text(
                   'Skip',
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.primary.withOpacity(0.8), // Updated color
+                    color: theme.colorScheme.primary.withValues(alpha: (0.8 * 255)),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -106,8 +107,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: ElevatedButton(
                     onPressed: _isLastPage
                         ? () async {
-                            await SharedPreferences.getInstance()
-                              ..setBool('onboarding_completed', true);
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool('onboarding_completed', true);
                             Navigator.pushReplacementNamed(context, '/dashboard');
                           }
                         : _animateToNextPage,

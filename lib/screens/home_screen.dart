@@ -183,7 +183,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ledger = Provider.of<LedgerProvider>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Ledger Book')),
+      appBar: AppBar(title: const Text('Balancr')),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ledger.people.isEmpty

@@ -1,4 +1,4 @@
-package com.example.ledger_book_flutter
+package com.armanmaurya.balancr
 
 import io.flutter.embedding.android.FlutterActivity
 
