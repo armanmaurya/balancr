@@ -33,6 +33,6 @@ class Transaction extends HiveObject {
   }
 
   String get formattedAmount {
-    return '\₹${amount.toStringAsFixed(2)}'; // You can change to $ if preferred
+    return '₹${amount.toStringAsFixed(2)}';
   }
 }

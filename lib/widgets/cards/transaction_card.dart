@@ -29,12 +29,12 @@ class TransactionCard extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          '$formattedTime \n${tx.note}',
+          '${tx.formattedDate}  $formattedTime\n${tx.note}',
           style: const TextStyle(fontSize: 12),
         ),
         trailing: IconButton(
           icon: const Icon(Icons.edit, color: Colors.blue),
-          onPressed: onEdit, // Fixed to use the provided callback
+          onPressed: onEdit,
         ),
       ),
     );

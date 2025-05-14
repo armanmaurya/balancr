@@ -39,7 +39,7 @@ class PersonCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Balance: ₹${person.balance.toStringAsFixed(2)}',
+                      'Balance: ₹${person.balance.abs().toStringAsFixed(2)}',
                       style: TextStyle(
                         color: person.balance < 0 ? Colors.red : Colors.green,
                         fontSize: 14,

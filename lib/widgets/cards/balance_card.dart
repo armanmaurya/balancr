@@ -21,7 +21,7 @@ class BalanceCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: Colors.grey.shade200, // subtle border for depth
+          color: Colors.grey.shade200,
           width: 1,
         ),
       ),
@@ -50,7 +50,7 @@ class BalanceCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              '₹${calculateBalance().toStringAsFixed(2)}',
+                '₹${calculateBalance().abs().toStringAsFixed(2)}',
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -71,8 +71,8 @@ class BalanceCard extends StatelessWidget {
               ),
               child: Text(
                 calculateBalance() >= 0
-                    ? 'You will receive ₹${calculateBalance().toStringAsFixed(2)}'
-                    : 'You owe ₹${(-calculateBalance()).toStringAsFixed(2)}',
+                  ? 'You owe ₹${calculateBalance().abs().toStringAsFixed(2)}'
+                  : 'You will receive ₹${calculateBalance().abs().toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

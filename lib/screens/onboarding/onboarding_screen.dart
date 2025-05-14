@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background, // Use theme background color
+      backgroundColor: theme.colorScheme.surface, // Use theme background color
       body: Stack(
         children: [
           // PageView with custom physics
@@ -93,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       decoration: BoxDecoration(
                         color: _currentPage == index
                             ? theme.colorScheme.primary
-                            : theme.colorScheme.onBackground.withOpacity(0.3),
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     );
