@@ -23,11 +23,11 @@ class OnboardingPage1 extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
 
           // Title
           Text(
-            'Track Your Finances',
+            'Track Money Given & Received',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class OnboardingPage1 extends StatelessWidget {
 
           // Description
           Text(
-            'Keep a detailed record of your income and expenses to stay on top of your finances.',
+            'Easily record how much you have given to others and how much others have given to you. Stay organized and never forget any transaction.',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey.shade600,

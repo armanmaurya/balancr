@@ -12,6 +12,16 @@ class OnboardingPage2 extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Illustration/Icon
+          Icon(
+            Icons.account_balance_wallet_outlined,
+            size: size.height * 0.4,
+            color: Colors.deepPurple.shade400,
+            semanticLabel: 'Wallet Illustration',
+          ),
+
+          const SizedBox(height: 40),
+
           // Title
           Text(
             'Manage Your Transactions',
@@ -23,20 +33,11 @@ class OnboardingPage2 extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
 
-          const SizedBox(height: 40),
-
-          // Inbuilt Icon
-          Icon(
-            Icons.account_balance_wallet_outlined,
-            size: size.height * 0.2,
-            color: Colors.deepPurple.shade400,
-          ),
-
           const SizedBox(height: 16),
 
           // Description
           Text(
-            'Easily add, edit, and categorize your transactions to keep your records organized.',
+            'Easily add, edit, and keep track of all money you give and receive. Stay organized and never miss a transaction.',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey.shade600,
