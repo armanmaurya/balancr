@@ -8,16 +8,24 @@ class LedgerProvider with ChangeNotifier {
 
   List<Person> get people => _box.values.toList();
 
-  void addPerson(String name) {
-    _box.add(Person(name: name));
-    notifyListeners();
+  void addPerson(Person person) {
+    // Avoid duplicate by name and phone (if provided)
+    final exists = _box.values.any((p) =>
+      p.name.trim().toLowerCase() == person.name.trim().toLowerCase() &&
+      (person.phone == null || person.phone!.isEmpty || p.phone == person.phone)
+    );
+    if (!exists) {
+      _box.add(person);
+      notifyListeners();
+    }
   }
 
   // Update Person
-  void updatePerson(int index, String name) {
+  void updatePerson(int index, String name, String phone) {
     final person = _box.getAt(index);
     if (person != null) {
       person.name = name;
+      person.phone = phone;
       person.save(); // important
       notifyListeners();
     }

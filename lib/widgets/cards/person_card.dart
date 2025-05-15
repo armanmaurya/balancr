@@ -8,12 +8,14 @@ class PersonCard extends StatelessWidget {
     this.onTap,
     this.onEdit,
     this.onDelete,
+    this.onMenu,
   });
 
   final Person person;
   final Function()? onTap;
   final Function()? onEdit;
   final Function()? onDelete;
+  final Function()? onMenu; // Add this callback
 
   @override
   Widget build(BuildContext context) {
@@ -48,41 +50,11 @@ class PersonCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (onEdit != null || onDelete != null)
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  itemBuilder: (context) => [
-                    if (onEdit != null)
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: const [
-                            Icon(Icons.edit, size: 20),
-                            SizedBox(width: 8),
-                            Text('Edit'),
-                          ],
-                        ),
-                      ),
-                    if (onDelete != null)
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: const [
-                            Icon(Icons.delete, size: 20, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Colors.red)),
-                          ],
-                        ),
-                      ),
-                  ],
-                  onSelected: (value) {
-                    if (value == 'edit' && onEdit != null) {
-                      onEdit!();
-                    } else if (value == 'delete' && onDelete != null) {
-                      onDelete!();
-                    }
-                  },
-                ),
+              // Replace PopupMenuButton with a three dots IconButton that calls onMenu
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: onMenu,
+              ),
             ],
           ),
         ),

@@ -11,8 +11,19 @@ class Person extends HiveObject {
   @HiveField(1)
   late List<Transaction> transactions;
 
-  Person({required this.name, List<Transaction>? transactions})
-      : transactions = transactions ?? [];
+  // Add optional contactId and phone fields for contacts integration
+  @HiveField(2)
+  String? contactId;
+
+  @HiveField(3)
+  String? phone;
+
+  Person({
+    required this.name,
+    List<Transaction>? transactions,
+    this.contactId,
+    this.phone,
+  }) : transactions = transactions ?? [];
 
   double get balance {
     return transactions.fold(0.0, (sum, tx) {

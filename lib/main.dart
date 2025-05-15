@@ -43,8 +43,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: onboardingCompleted ? const HomeScreen() : const OnboardingScreen(),
-      routes: {'/dashboard': (context) => const HomeScreen()},
+      home: onboardingCompleted ? HomeScreen() : const OnboardingScreen(),
+      routes: {'/dashboard': (context) => HomeScreen()},
     );
   }
 }

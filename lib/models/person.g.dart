@@ -19,17 +19,23 @@ class PersonAdapter extends TypeAdapter<Person> {
     return Person(
       name: fields[0] as String,
       transactions: (fields[1] as List?)?.cast<Transaction>(),
+      contactId: fields[2] as String?,
+      phone: fields[3] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Person obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.transactions);
+      ..write(obj.transactions)
+      ..writeByte(2)
+      ..write(obj.contactId)
+      ..writeByte(3)
+      ..write(obj.phone);
   }
 
   @override
