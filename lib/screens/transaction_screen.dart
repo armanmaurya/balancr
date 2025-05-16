@@ -6,7 +6,6 @@ import 'package:ledger_book_flutter/widgets/cards/balance_card.dart';
 import 'package:ledger_book_flutter/widgets/cards/transaction_card.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
 import '../providers/ledger_provider.dart';
 
 class TransactionScreen extends StatefulWidget {
@@ -190,7 +189,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                 amountController.text,
                               );
                               if (updatedAmount != null && updatedAmount > 0) {
-                                final oldTx = _sortedTransactions[transactionIndex!];
+                                final oldTx = _sortedTransactions[transactionIndex];
                                 final updatedTx = Transaction(
                                   amount: updatedAmount,
                                   isGiven: oldTx.isGiven,
@@ -203,7 +202,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                   updatedTx,
                                 );
                                 setState(() {
-                                  _sortedTransactions[transactionIndex!] = updatedTx;
+                                  _sortedTransactions[transactionIndex] = updatedTx;
                                 });
                                 Navigator.of(ctx).pop();
                               }
@@ -214,8 +213,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
                         Expanded(
                           child: DeleteButton(
                             onPressed: () {
-                              final oldTx = _sortedTransactions[transactionIndex!];
-                              final removeIndex = transactionIndex!;
+                              final oldTx = _sortedTransactions[transactionIndex];
+                              final removeIndex = transactionIndex;
                               ledger.deleteTransaction(
                                 widget.index,
                                 person.transactions.indexOf(oldTx),

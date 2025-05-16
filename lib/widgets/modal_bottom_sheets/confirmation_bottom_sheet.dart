@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ledger_book_flutter/providers/ledger_provider.dart';
-import 'package:provider/provider.dart';
 
 typedef ConfirmationAction = void Function();
 
