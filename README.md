@@ -3,10 +3,18 @@
 Balancr is a app made with flutter designed to help you manage shared expenses. Add members, track spending, view balances, and easily see who owes what. Settle up with others and keep your group finances organized.
 
 ## Table of Contents
+- [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
 - [Contributing](#contributing)
+
+## Features
+- **User-friendly interface**: Intuitive design for easy navigation.
+- **Expense tracking**: Add and manage expenses with ease.
+- **Member management**: Add and remove members from your group.
+- **Balance overview**: View balances for each member at a glance.
+- **Settle up**: Easily settle up with other members.
 
 ## Installation
 
