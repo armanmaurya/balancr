@@ -23,11 +23,11 @@ Make sure you have [Flutter](https://flutter.dev/docs/get-started/install) versi
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/{your-username}/ledger_book_flutter.git
+   git clone https://github.com/{your-username}/balancr.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd ledger_book_flutter
+   cd balancr
    ```
 3. Install dependencies:
    ```bash
