@@ -1,16 +1,57 @@
-# ledger_book_flutter
+# Balancr
 
-A new Flutter project.
+Balancr is a app made with flutter designed to help you manage shared expenses. Add members, track spending, view balances, and easily see who owes what. Settle up with others and keep your group finances organized.
 
-## Getting Started
+![Visitor Count](https://visitor-badge.glitch.me/badge?page_id=armanmaurya.ledger_book_flutter)
 
-This project is a starting point for a Flutter application.
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
+- [Contributing](#contributing)
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**Prerequisite:**  
+Make sure you have [Flutter](https://flutter.dev/docs/get-started/install) version **greater than 3.29.2** installed.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/{your-username}/ledger_book_flutter.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd ledger_book_flutter
+   ```
+3. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+
+## Usage
+1. Run the app:
+   ```bash
+   flutter run
+   ```
+## Contributing
+Contributions are welcome! Please follow these steps:
+1. Fork the repository.
+2. Create a new branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Make your changes and commit them:
+   ```bash
+   git commit -m "Add your message here"
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. Create a pull request.
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+- [Flutter](https://flutter.dev/) - The framework used to build this app.
