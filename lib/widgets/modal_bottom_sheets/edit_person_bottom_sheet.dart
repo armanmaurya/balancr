@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ledger_book_flutter/providers/ledger_provider.dart';
 
-void displayEditPersonBottomSheet(BuildContext context, int personIndex) {
+void displayEditPersonBottomSheet(BuildContext context, String personId) {
     final ledger = Provider.of<LedgerProvider>(context, listen: false);
-    final person = ledger.people[personIndex];
+    final person = ledger.getPersonById(personId);
+    if (person == null) return;
     final nameController = TextEditingController(text: person.name);
     final phoneController = TextEditingController(text: person.phone);
 
@@ -68,7 +69,7 @@ void displayEditPersonBottomSheet(BuildContext context, int personIndex) {
                     onPressed: () {
                       if (nameController.text.trim().isNotEmpty) {
                         ledger.updatePerson(
-                          personIndex,
+                          personId,
                           nameController.text.trim(),
                           phoneController.text.trim(),
                         );

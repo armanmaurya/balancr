@@ -119,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         CupertinoPageRoute(
-                          builder: (context) => TransactionScreen(index: i),
+                          builder: (context) => TransactionScreen(personId: person.id),
                         ),
                       );
                     },
@@ -127,49 +127,45 @@ class HomeScreen extends StatelessWidget {
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
-                        useSafeArea:
-                            true, // Add this for smoother keyboard handling
+                        useSafeArea: true,
                         enableDrag: true,
-                        builder:
-                            (ctx) => SingleChildScrollView(
-                              // Wrap with SingleChildScrollView for keyboard push-up
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  bottom:
-                                      MediaQuery.of(ctx).viewInsets.bottom + 16,
-                                  left: 16,
-                                  right: 16,
-                                  top: 24,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ListTile(
-                                      leading: const Icon(Icons.edit),
-                                      title: const Text('Edit'),
-                                      onTap: () {
-                                        Navigator.pop(ctx);
-                                        displayEditPersonBottomSheet(
-                                          context,
-                                          i,
-                                        );
-                                      },
-                                    ),
-                                    ListTile(
-                                      leading: const Icon(Icons.delete),
-                                      title: const Text('Delete'),
-                                      onTap: () {
-                                        Navigator.pop(ctx);
-                                        displayDeletePersonBottomSheet(
-                                          context,
-                                          i,
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
+                        builder: (ctx) => SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+                              left: 16,
+                              right: 16,
+                              top: 24,
                             ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.edit),
+                                  title: const Text('Edit'),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    displayEditPersonBottomSheet(
+                                      context,
+                                      person.id,
+                                    );
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.delete),
+                                  title: const Text('Delete'),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    displayDeletePersonBottomSheet(
+                                      context,
+                                      person.id,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),

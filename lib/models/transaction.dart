@@ -16,16 +16,20 @@ class Transaction extends HiveObject {
   @HiveField(3)
   String note;
 
+  @HiveField(4)
+  String id;
+
   Transaction({
     required this.amount,
     required this.isGiven,
     required this.date,
     this.note = '',
+    required this.id,
   });
 
   @override
   String toString() {
-    return 'Transaction(amount: $amount, isGiven: $isGiven, date: $date, note: $note)';
+    return 'Transaction(amount: $amount, isGiven: $isGiven, date: $date, note: $note, id: $id)';
   }
 
   String get formattedDate {

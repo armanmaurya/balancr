@@ -33,13 +33,10 @@ class _AddPersonPageState extends State<AddPersonPage> {
         context,
         listen: false,
       ).addPerson(
-        Person(
-          name: name,
-          contactId: widget.contactId,
-          phone: phone.isNotEmpty ? phone : null,
-        ),
+        name: name,
+        contactId: widget.contactId,
+        phone: phone.isNotEmpty ? phone : null,
       );
-      // Navigator.pop(context);
       Navigator.popUntil(context, (route) => route.isFirst);
     }
   }

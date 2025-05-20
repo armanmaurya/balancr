@@ -18,11 +18,15 @@ class Person extends HiveObject {
   @HiveField(3)
   String? phone;
 
+  @HiveField(4)
+  String id;
+
   Person({
     required this.name,
     List<Transaction>? transactions,
     this.contactId,
     this.phone,
+    required this.id,
   }) : transactions = transactions ?? [];
 
   double get balance {

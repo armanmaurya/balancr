@@ -3,7 +3,7 @@ import 'package:ledger_book_flutter/widgets/modal_bottom_sheets/confirmation_bot
 import 'package:provider/provider.dart';
 import 'package:ledger_book_flutter/providers/ledger_provider.dart';
 
-Future<T?> displayDeletePersonBottomSheet<T>(BuildContext context, int personIndex) {
+Future<T?> displayDeletePersonBottomSheet<T>(BuildContext context, String personId) {
   return showConfirmationBottomSheet<T>(
     context: context,
     title: 'Delete Person',
@@ -14,7 +14,7 @@ Future<T?> displayDeletePersonBottomSheet<T>(BuildContext context, int personInd
       Provider.of<LedgerProvider>(
         context,
         listen: false,
-      ).deletePerson(personIndex);
+      ).deletePerson(personId);
     },
   );
 }
