@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 typedef ConfirmationAction = void Function();
 
-Future<T?> showConfirmationBottomSheet<T>({
+Future<T?> showDeleteBottomSheet<T>({
   required BuildContext context,
   required String title,
   required String message,

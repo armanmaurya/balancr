@@ -1,28 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:ledger_book_flutter/models/person.dart';
-import 'package:ledger_book_flutter/models/transaction.dart';
+import 'package:ledger_book_flutter/core/router/app_router.dart';
 import 'package:ledger_book_flutter/providers/ledger_provider.dart';
-import 'package:ledger_book_flutter/screens/home_screen.dart';
-import 'package:ledger_book_flutter/screens/onboarding/onboarding_screen.dart';
+import 'package:ledger_book_flutter/providers/theme_provider.dart';
+import 'package:ledger_book_flutter/providers/language_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:ledger_book_flutter/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-
-  Hive.registerAdapter(TransactionAdapter());
-  Hive.registerAdapter(PersonAdapter());
-
-  await Hive.openBox<Person>('people');
 
   final prefs = await SharedPreferences.getInstance();
   final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final isDark = await ThemeProvider.loadInitialIsDark();
+  final initialLocale = await LanguageProvider.loadInitialLocale();
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LedgerProvider(),
-      child: MyApp(onboardingCompleted: onboardingCompleted),
+    ProviderScope(
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider(isDark: isDark)),
+          ChangeNotifierProvider(create: (_) => LanguageProvider(initialLocale: initialLocale)),
+        ],
+        child: MyApp(onboardingCompleted: onboardingCompleted),
+      ),
     ),
   );
 }
@@ -35,16 +41,34 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Balancr',
-      themeMode: ThemeMode.system,
-      darkTheme: ThemeData.dark(),
-      debugShowCheckedModeBanner: false,
+    final themeProvider = context.watch<ThemeProvider>();
+    final languageProvider = context.watch<LanguageProvider>();
+    return MaterialApp.router(
+      routerConfig: AppRouter.router,
+      onGenerateTitle: (ctx) => AppLocalizations.of(ctx)!.appTitle,
+      themeMode: themeProvider.themeMode,
+      locale: languageProvider.locale,
+      supportedLocales: LanguageProvider.supportedLocales,
+      localizationsDelegates: [
+        // Built-in localization of basic text for Material widgets
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        AppLocalizations.delegate,
+      ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: onboardingCompleted ? HomeScreen() : const OnboardingScreen(),
-      routes: {'/dashboard': (context) => HomeScreen()},
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      debugShowCheckedModeBanner: true,
     );
   }
 }

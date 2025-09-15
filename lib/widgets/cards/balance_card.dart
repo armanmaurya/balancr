@@ -4,13 +4,14 @@ import 'package:ledger_book_flutter/models/person.dart';
 class BalanceCard extends StatelessWidget {
   const BalanceCard({super.key, required this.person});
 
-  final Person person;
+  final People person;
 
   double calculateBalance() {
-    return person.transactions.fold(
-      0.0,
-      (sum, tx) => tx.isGiven ? sum - tx.amount : sum + tx.amount,
-    );
+    // return person.transactions.fold(
+    //   0.0,
+    //   (sum, tx) => tx.isGiven ? sum - tx.amount : sum + tx.amount,
+    // );
+    return 0;
   }
 
   @override

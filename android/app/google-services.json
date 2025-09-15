@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "227255841640",
+    "project_id": "balencr-77a8a",
+    "storage_bucket": "balencr-77a8a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227255841640:android:192f502552bb4e70e5dcdd",
+        "android_client_info": {
+          "package_name": "com.armanmaurya.balancr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "227255841640-gvqalpmmh0hhfvnf6nqf7a85v90k9cqn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.armanmaurya.balancr",
+            "certificate_hash": "86bf5839d165d3deaddc80742b8a84ba74381cfa"
+          }
+        },
+        {
+          "client_id": "227255841640-osl4d2pgomc4e50sqan0cin0fde7lof5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9nEO3EiMX5jCQxXu9_VPgwNSaR4Iq76M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "227255841640-osl4d2pgomc4e50sqan0cin0fde7lof5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

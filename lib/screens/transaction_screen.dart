@@ -27,8 +27,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
     final ledger = Provider.of<LedgerProvider>(context);
     final person = ledger.getPersonById(widget.personId);
     if (person != null) {
-      _sortedTransactions = [...person.transactions]
-        ..sort((a, b) => b.date.compareTo(a.date));
+      // _sortedTransactions = [...person.transactions]
+      //   ..sort((a, b) => b.date.compareTo(a.date));
     }
   }
 
@@ -39,16 +39,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
     final ledger = Provider.of<LedgerProvider>(context, listen: false);
     final person = ledger.getPersonById(widget.personId);
     final isEditing = transactionId != null;
-    final transaction = isEditing
-        ? person?.transactions.firstWhere((t) => t.id == transactionId)
-        : null;
+    // final transaction = isEditing
+    //     ? person?.transactions.firstWhere((t) => t.id == transactionId)
+    //     : null;
 
-    final amountController = TextEditingController(
-      text: isEditing ? transaction!.amount.toString() : '',
-    );
-    final noteController = TextEditingController(
-      text: isEditing ? transaction!.note : '',
-    );
+    // final amountController = TextEditingController(
+    //   text: isEditing ? transaction!.amount.toString() : '',
+    // );
+    // final noteController = TextEditingController(
+    //   text: isEditing ? transaction!.note : '',
+    // );
 
     showModalBottomSheet(
       context: context,
@@ -75,7 +75,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-                controller: amountController,
+                // controller: amountController,
                 keyboardType: TextInputType.numberWithOptions(
                   decimal: true,
                 ),
@@ -93,7 +93,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: noteController,
+                // controller: noteController,
                 decoration: InputDecoration(
                   labelText: 'Note (optional)',
                   prefixIcon: const Icon(Icons.note),
@@ -122,105 +122,105 @@ class _TransactionScreenState extends State<TransactionScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: () {
-                          final amount = double.tryParse(
-                            amountController.text,
-                          );
-                          if (amount != null && amount > 0) {
-                            final newTx = Transaction(
-                              amount: amount,
-                              isGiven: true,
-                              date: DateTime.now(),
-                              note: noteController.text,
-                              id: '', // id will be set in provider
-                            );
-                            ledger.addTransaction(
-                              widget.personId,
-                              newTx,
-                            );
-                            setState(() {
-                              _sortedTransactions.insert(0, newTx);
-                              _listKey.currentState?.insertItem(0);
-                            });
-                            Navigator.of(ctx).pop();
-                          }
+                        onPressed: () async {
+                          // final amount = double.tryParse(
+                          //   amountController.text,
+                          // );
+                          // if (amount != null && amount > 0) {
+                          //   final newTx = Transaction(
+                          //     amount: amount,
+                          //     isGiven: true,
+                          //     date: DateTime.now(),
+                          //     note: noteController.text,
+                          //     id: '', // id will be set in provider
+                          //   );
+                          //   await ledger.addTransaction(
+                          //     widget.personId,
+                          //     newTx,
+                          //   );
+                          //   setState(() {
+                          //     _sortedTransactions.insert(0, newTx);
+                          //     _listKey.currentState?.insertItem(0);
+                          //   });
+                          //   Navigator.of(ctx).pop();
+                          // }
                         },
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.call_received, size: 20),
-                        label: const Text('Taken'),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        onPressed: () {
-                          final amount = double.tryParse(
-                            amountController.text,
-                          );
-                          if (amount != null && amount > 0) {
-                            final newTx = Transaction(
-                              amount: amount,
-                              isGiven: false,
-                              date: DateTime.now(),
-                              note: noteController.text,
-                              id: '', // id will be set in provider
-                            );
-                            ledger.addTransaction(
-                              widget.personId,
-                              newTx,
-                            );
-                            setState(() {
-                              _sortedTransactions.insert(0, newTx);
-                              _listKey.currentState?.insertItem(0);
-                            });
-                            Navigator.of(ctx).pop();
-                          }
-                        },
-                      ),
-                    ),
+                    // Expanded(
+                    //   // child: ElevatedButton.icon(
+                    //   //   icon: const Icon(Icons.call_received, size: 20),
+                    //   //   label: const Text('Taken'),
+                    //   //   style: ElevatedButton.styleFrom(
+                    //   //     foregroundColor: Colors.white,
+                    //   //     backgroundColor: Colors.green,
+                    //   //     shape: RoundedRectangleBorder(
+                    //   //       borderRadius: BorderRadius.circular(10),
+                    //   //     ),
+                    //   //     padding: const EdgeInsets.symmetric(vertical: 16),
+                    //   //   ),
+                    //   //   // onPressed: () async {
+                    //   //   //   final amount = double.tryParse(
+                    //   //   //     amountController.text,
+                    //   //   //   );
+                    //   //   //   if (amount != null && amount > 0) {
+                    //   //   //     final newTx = Transaction(
+                    //   //   //       amount: amount,
+                    //   //   //       isGiven: false,
+                    //   //   //       date: DateTime.now(),
+                    //   //   //       note: noteController.text,
+                    //   //   //       id: '', // id will be set in provider
+                    //   //   //     );
+                    //   //   //     await ledger.addTransaction(
+                    //   //   //       widget.personId,
+                    //   //   //       newTx,
+                    //   //   //     );
+                    //   //   //     setState(() {
+                    //   //   //       _sortedTransactions.insert(0, newTx);
+                    //   //   //       _listKey.currentState?.insertItem(0);
+                    //   //   //     });
+                    //   //   //     Navigator.of(ctx).pop();
+                    //   //   //   }
+                    //   //   // },
+                    //   // ),
+                    // ),
                   ] else ...[
-                    Expanded(
-                      child: UpdateButton(
-                        onPressed: () {
-                          final updatedAmount = double.tryParse(
-                            amountController.text,
-                          );
-                          if (updatedAmount != null && updatedAmount > 0) {
-                            final oldTx = _sortedTransactions.firstWhere((t) => t.id == transactionId);
-                            final updatedTx = Transaction(
-                              amount: updatedAmount,
-                              isGiven: oldTx.isGiven,
-                              date: oldTx.date,
-                              note: noteController.text,
-                              id: oldTx.id,
-                            );
-                            ledger.updateTransaction(
-                              widget.personId,
-                              oldTx.id,
-                              updatedTx,
-                            );
-                            setState(() {
-                              final idx = _sortedTransactions.indexWhere((t) => t.id == transactionId);
-                              if (idx != -1) _sortedTransactions[idx] = updatedTx;
-                            });
-                            Navigator.of(ctx).pop();
-                          }
-                        },
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: UpdateButton(
+                    //     onPressed: () async {
+                    //       final updatedAmount = double.tryParse(
+                    //         amountController.text,
+                    //       );
+                    //       if (updatedAmount != null && updatedAmount > 0) {
+                    //         final oldTx = _sortedTransactions.firstWhere((t) => t.id == transactionId);
+                    //         final updatedTx = Transaction(
+                    //           amount: updatedAmount,
+                    //           isGiven: oldTx.isGiven,
+                    //           date: oldTx.date,
+                    //           note: noteController.text,
+                    //           id: oldTx.id,
+                    //         );
+                    //         await ledger.updateTransaction(
+                    //           widget.personId,
+                    //           oldTx.id,
+                    //           updatedTx,
+                    //         );
+                    //         setState(() {
+                    //           final idx = _sortedTransactions.indexWhere((t) => t.id == transactionId);
+                    //           if (idx != -1) _sortedTransactions[idx] = updatedTx;
+                    //         });
+                    //         Navigator.of(ctx).pop();
+                    //       }
+                    //     },
+                    //   ),
+                    // ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: DeleteButton(
-                        onPressed: () {
+                        onPressed: () async {
                           final oldTx = _sortedTransactions.firstWhere((t) => t.id == transactionId);
-                          ledger.deleteTransaction(
+                          await ledger.deleteTransaction(
                             widget.personId,
                             oldTx.id,
                           );
@@ -274,7 +274,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             children: [
               if (person != null) BalanceCard(person: person),
               const SizedBox(height: 16),
-              if (person == null || person.transactions.isEmpty)
+              if (person == null)
                 buildEmptyTransaction()
               else
                 AnimatedList(

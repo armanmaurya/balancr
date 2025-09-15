@@ -1,104 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ledger_book_flutter/widgets/inputs/search_bar.dart';
-import 'dart:async';
-import 'package:ledger_book_flutter/widgets/lists/contact_list_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ledger_book_flutter/providers/contacts_search_riverpod.dart';
+import 'package:ledger_book_flutter/features/contacts/presentation/widgets/person_contact_card.dart';
 
-class SearchPersonPage extends StatefulWidget {
+class SearchPersonPage extends ConsumerStatefulWidget {
   const SearchPersonPage({super.key});
 
   @override
-  State<SearchPersonPage> createState() => _SearchPersonPageState();
+  ConsumerState<SearchPersonPage> createState() => _SearchPersonPageState();
 }
 
-class _SearchPersonPageState extends State<SearchPersonPage> {
-  final TextEditingController nameController = TextEditingController();
-  List<Contact> filteredContacts = [];
-  List<Contact> allContacts = []; // Store all contacts
-  bool isLoading = false;
-  bool hasPermission = true;
-  Timer? _debounce;
-  final FocusNode _searchFocusNode = FocusNode();
+class _SearchPersonPageState extends ConsumerState<SearchPersonPage> {
+  late final TextEditingController _nameController = TextEditingController();
+  late final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _searchFocusNode.requestFocus();
-    _fetchContactsOnOpen();
-  }
-
-  Future<void> _fetchContactsOnOpen() async {
-    setState(() {
-      isLoading = true;
-    });
-    // Always fetch contacts and show them on page push
-    final permission = await FlutterContacts.requestPermission();
-    print('Permission granted: $permission');
-    if (permission) {
-      final contacts = await FlutterContacts.getContacts(withProperties: true);
-
-      setState(() {
-        allContacts = contacts;
-        filteredContacts = contacts; // Show all contacts immediately
-        hasPermission = true;
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        allContacts = [];
-        filteredContacts = [];
-        hasPermission = false;
-        isLoading = false;
-      });
-    }
-  }
-
-  void _searchContacts(String value) async {
-    _debounce?.cancel();
-    if (value.isEmpty) {
-      setState(() {
-        filteredContacts = List.from(allContacts); // Show all contacts if search is empty
-        isLoading = false;
-      });
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-    });
-
-    _debounce = Timer(const Duration(milliseconds: 400), () {
-      if (hasPermission) {
-        setState(() {
-          filteredContacts =
-              allContacts
-                  .where(
-                    (c) => c.displayName.toLowerCase().contains(
-                      value.toLowerCase(),
-                    ),
-                  )
-                  .toList();
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          filteredContacts = [];
-          isLoading = false;
-        });
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _searchFocusNode.requestFocus();
     });
   }
 
   @override
   void dispose() {
-    _debounce?.cancel();
-    nameController.dispose();
+    _nameController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(contactsSearchProvider);
+    final notifier = ref.read(contactsSearchProvider.notifier);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -110,19 +46,122 @@ class _SearchPersonPageState extends State<SearchPersonPage> {
           ),
           SliverToBoxAdapter(
             child: PrimarySearchBar(
-              nameController: nameController,
+              nameController: _nameController,
               searchFocusNode: _searchFocusNode,
-              onSearchContacts: _searchContacts,
+              onSearchContacts: notifier.onQueryChanged,
               hintText: "Search Contacts...",
             ),
           ),
-          ContactListWidget(
-            isLoading: isLoading,
-            hasPermission: hasPermission,
-            filteredContacts: filteredContacts,
-            nameController: nameController,
-            parentContext: context,
-          ),
+          if (state.isLoading)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: const Center(
+                child: CircularProgressIndicator(strokeWidth: 2.0),
+              ),
+            )
+          else if (_nameController.text.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search, size: 48, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Search your contacts',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Start typing to find people or create a new person',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.person_add),
+                    label: const Text('Create new person'),
+                    onPressed: () {
+                      context.push('/add_contact');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else if (!state.hasPermission)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Contacts permission denied',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Please enable contacts permission in settings to search your contacts',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+          else if (state.filteredContacts.isEmpty && _nameController.text.isNotEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No contacts found',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Try a different name or add a new contact',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.person_add),
+                    label: Text('Create "${_nameController.text}"'),
+                    onPressed: () {
+                      context.push('/add_contact?name=${Uri.encodeComponent(_nameController.text)}');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (ctx, i) {
+                  final contact = state.filteredContacts[i];
+                  final displayName = contact.displayName;
+                  if (displayName.isEmpty) return const SizedBox.shrink();
+                  return PersonContactCard(
+                    key: ValueKey(contact.id),
+                    displayName: displayName,
+                    contact: contact,
+                  );
+                },
+                childCount: state.filteredContacts.length,
+              ),
+            ),
         ],
       ),
     );

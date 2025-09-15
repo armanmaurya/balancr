@@ -1,49 +1,41 @@
-import 'package:hive/hive.dart';
 import 'transaction.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-part 'person.g.dart';
-
-@HiveType(typeId: 1)
-class Person extends HiveObject {
-  @HiveField(0)
+class People {
   late String name;
-
-  @HiveField(1)
-  late List<Transaction> transactions;
-
-  // Add optional contactId and phone fields for contacts integration
-  @HiveField(2)
-  String? contactId;
-
-  @HiveField(3)
   String? phone;
-
-  @HiveField(4)
   String id;
 
-  Person({
+  People({
     required this.name,
-    List<Transaction>? transactions,
-    this.contactId,
     this.phone,
     required this.id,
-  }) : transactions = transactions ?? [];
+  });
 
-  double get balance {
-    return transactions.fold(0.0, (sum, tx) {
-      return tx.isGiven ? sum - tx.amount : sum + tx.amount;
-    });
+  factory People.fromMap(Map<String, dynamic> map, {required String id}) {
+    return People(
+      name: map['name'] as String,
+      phone: map['phone'] as String?,
+      // Transactions will be populated separately from subcollection
+      id: id,
+    );
   }
 
-  double get totalGiven {
-    return transactions
-        .where((tx) => tx.isGiven)
-        .fold(0.0, (sum, tx) => sum + tx.amount);
+  // Create a People from a Firestore document
+  factory People.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data() ?? <String, dynamic>{};
+    return People(
+      id: doc.id,
+      // Prefer 'name', fall back to common alternatives if present
+      name: (data['name'] as String?) ?? (data['displayName'] as String?) ?? '',
+      phone: data['phone'] as String?,
+    );
   }
 
-  double get totalReceived {
-    return transactions
-        .where((tx) => !tx.isGiven)
-        .fold(0.0, (sum, tx) => sum + tx.amount);
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'phone': phone,
+    };
   }
 }
