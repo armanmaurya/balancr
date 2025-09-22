@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../firebase_options.dart';
 
 // Top-level background handler must be a global function.
@@ -24,8 +25,12 @@ class PushNotificationService {
   static final instance = PushNotificationService._();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
+    // Initialize local notifications
+    await _initializeLocalNotifications();
+    
     try {
       // Request permissions (required on iOS, recommended on Android 13+)
       await _requestPermission();
@@ -53,7 +58,9 @@ class PushNotificationService {
         print('FCM Foreground message: ${message.messageId}');
         print('Title: ${message.notification?.title}');
         print('Body: ${message.notification?.body}');
-        // TODO: Show in-app notification or handle data
+        
+        // Show local notification when app is in foreground
+        _showLocalNotification(message);
       });
 
       // App opened from terminated state via notification
@@ -96,5 +103,64 @@ class PushNotificationService {
     // } else if (type == 'contact') {
     //   // Navigate to contact details
     // }
+  }
+
+  Future<void> _initializeLocalNotifications() async {
+    // Android notification settings
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/launcher_icon');
+
+    // iOS notification settings  
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    await _localNotifications.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: _onNotificationTapped,
+    );
+  }
+
+  void _onNotificationTapped(NotificationResponse response) {
+    print('Notification tapped with payload: ${response.payload}');
+    // TODO: Handle notification tap - you can navigate to specific screens here
+    // You might want to use a global navigator key to navigate from here
+  }
+
+  Future<void> _showLocalNotification(RemoteMessage message) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'high_importance_channel', // channel id
+      'High Importance Notifications', // channel name
+      channelDescription: 'This channel is used for important notifications.',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails();
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    await _localNotifications.show(
+      message.messageId.hashCode, // notification id
+      message.notification?.title ?? 'Balancr',
+      message.notification?.body ?? 'You have a new notification',
+      platformChannelSpecifics,
+      payload: message.data.toString(), // pass data as payload
+    );
   }
 }
