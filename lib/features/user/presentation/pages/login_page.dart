@@ -5,7 +5,7 @@ import 'package:ledger_book_flutter/core/router/routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
 import 'package:ledger_book_flutter/l10n/app_localizations.dart';
-import 'package:ledger_book_flutter/features/auth/presentation/providers/auth_provider.dart';
+import 'package:ledger_book_flutter/features/user/presentation/providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});

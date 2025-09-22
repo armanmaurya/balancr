@@ -29,6 +29,27 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
 
   bool get isEditing => widget.transaction != null;
 
+  // Whether the user has modified any field compared to the original transaction
+  bool get _hasChanges {
+    if (!isEditing) return true; // not in edit mode => save buttons enabled
+    final original = widget.transaction!;
+
+    // Parse amount safely and compare numerically
+    final currentAmount = double.tryParse(_amountController.text.trim()) ?? 0.0;
+    final amountChanged = currentAmount != original.amount;
+
+    // Compare note with trimming to avoid whitespace-only differences
+    final noteChanged = _noteController.text.trim() != original.note;
+
+    // Compare only Y/M/D for date equality
+    final dateChanged = !_isSameDate(_selectedDate, original.date);
+
+    return amountChanged || noteChanged || dateChanged;
+  }
+
+  bool _isSameDate(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
   @override
   void initState() {
     super.initState();
@@ -107,6 +128,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                   }
                   return null;
                 },
+                onChanged: (_) {
+                  if (isEditing) setState(() {});
+                },
               ),
               const SizedBox(height: 16),
               // Date selection button
@@ -124,6 +148,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                   ),
                 ),
                 maxLines: 3,
+                onChanged: (_) {
+                  if (isEditing) setState(() {});
+                },
               ),
               const SizedBox(height: 24),
               OutlinedButton.icon(
@@ -137,7 +164,10 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: () => _selectDate(context),
+                onPressed: () async {
+                  await _selectDate(context);
+                  if (isEditing) setState(() {});
+                },
               ),
               const SizedBox(height: 16),
               if (!isEditing) ...[
@@ -219,7 +249,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: _isLoading ? null : () => _handleUpdate(),
+                  onPressed: _isLoading || !_hasChanges ? null : () => _handleUpdate(),
                 ),
                 const SizedBox(height: 16),
                 DeleteButton(onPressed: _handleDelete),

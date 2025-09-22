@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../user/providers/user_provider.dart';
 import '../../data/datasources/transaction_remote_datasource.dart';
 import '../../data/models/transaction_model.dart';
 import '../../data/repositories/transaction_repository_impl.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/repositories/transaction_repository.dart';
-import '../../../auth/providers/auth_provider.dart';
 
 // Low-level dependencies
 final _firestoreProvider = Provider<FirebaseFirestore>(

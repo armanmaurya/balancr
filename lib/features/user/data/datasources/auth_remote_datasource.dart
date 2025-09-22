@@ -1,16 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../domain/entities/user_entity.dart';
 import '../models/user_model.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final FirebaseFirestore _firestore;
 
   AuthRemoteDataSource({
     FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
+    FirebaseFirestore? firestore,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn();
+       _googleSignIn = googleSignIn ?? GoogleSignIn(),
+       _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Sign in with Google
   Future<UserModel?> signInWithGoogle() async {
@@ -68,5 +74,21 @@ class AuthRemoteDataSource {
       if (user == null) return null;
       return UserModel.fromFirebaseUser(user);
     });
+  }
+
+  // Firestore operations
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getUserFinancialDataStream(String userId) {
+    return _firestore.collection('users').doc(userId).snapshots();
+  }
+
+  Future<void> upsertUser(UserEntity user) async {
+    await _firestore.collection('users').doc(user.uid).set({
+      'email': user.email,
+      'displayName': user.displayName,
+      'photoURL': user.photoURL,
+      'totalGiven': user.totalGiven,
+      'totalTaken': user.totalTaken,
+      'netBalance': user.netBalance,
+    }, SetOptions(merge: true));
   }
 }

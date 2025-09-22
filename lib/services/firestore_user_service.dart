@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-import '../features/auth/data/models/user_model.dart';
-import '../features/auth/domain/entities/user_entity.dart';
+import '../features/user/data/models/user_model.dart';
+import '../features/user/domain/entities/user_entity.dart';
 
 class FirestoreUserService {
   FirestoreUserService({FirebaseFirestore? firestore})

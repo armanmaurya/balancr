@@ -34,8 +34,11 @@ interface TransactionData {
 }
 
 /**
- * Cloud Function to update contact balance when a transaction is modified
+ * Cloud Function to update contact balance and user financial summary when a transaction is modified
  * Triggers on: create, update, delete of transaction documents
+ * Updates both:
+ * - Contact balance (tracks money owed between user and contact)
+ * - User financial summary (totalGiven, totalTaken, netBalance)
  * Uses incremental approach for better performance
  */
 export const updateContactOnTransaction = onDocumentWritten(
@@ -76,13 +79,19 @@ export const updateContactOnTransaction = onDocumentWritten(
 
       // Handle different operation types with incremental updates
       if (isCreate && after) {
-        // New transaction created - add to contact balance
-        await incrementContactBalance(db, userId, after, 1);
+        // New transaction created - add to contact balance and update user summary
+        await Promise.all([
+          incrementContactBalance(db, userId, after, 1),
+          updateUserFinancialSummary(db, userId, after, 1)
+        ]);
       } else if (isDelete && before) {
-        // Transaction deleted - subtract from contact balance
-        await incrementContactBalance(db, userId, before, -1);
+        // Transaction deleted - subtract from contact balance and update user summary
+        await Promise.all([
+          incrementContactBalance(db, userId, before, -1),
+          updateUserFinancialSummary(db, userId, before, -1)
+        ]);
       } else if (isUpdate && before && after) {
-        // Transaction updated - handle changes
+        // Transaction updated - handle changes for both contact and user
         await handleTransactionUpdate(db, userId, before, after);
       }
 
@@ -138,6 +147,47 @@ async function incrementContactBalance(
 }
 
 /**
+ * Helper function to update user's financial summary
+ */
+async function updateUserFinancialSummary(
+  db: admin.firestore.Firestore,
+  userId: string,
+  transactionData: TransactionData,
+  multiplier: number
+): Promise<void> {
+  const amount = transactionData.amount ? parseFloat(transactionData.amount.toString()) : 0;
+  const isGiven = transactionData.isGiven;
+
+  // Calculate changes to user's financial summary
+  const givenChange = isGiven ? amount * multiplier : 0;
+  const takenChange = !isGiven ? amount * multiplier : 0;
+  const netBalanceChange = (isGiven ? amount : -amount) * multiplier;
+
+  logger.info(
+    `💰 Updating user ${userId} financial summary - given: ${givenChange}, taken: ${takenChange}, net: ${netBalanceChange}`
+  );
+
+  try {
+    // Update the user document with incremental financial changes
+    const userRef = db.doc(`users/${userId}`);
+    
+    await userRef.update({
+      totalGiven: admin.firestore.FieldValue.increment(givenChange),
+      totalTaken: admin.firestore.FieldValue.increment(takenChange),
+      netBalance: admin.firestore.FieldValue.increment(netBalanceChange),
+      lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    logger.info(
+      `✅ Successfully updated user ${userId} financial summary`
+    );
+  } catch (error) {
+    logger.error(`❌ Failed to update user ${userId} financial summary:`, error);
+    throw error;
+  }
+}
+
+/**
  * Helper function to handle transaction updates
  */
 async function handleTransactionUpdate(
@@ -153,14 +203,20 @@ async function handleTransactionUpdate(
   if (beforeContactId !== afterContactId) {
     logger.info(`🔄 Contact changed from ${beforeContactId} to ${afterContactId}`);
 
-    // Remove from old contact
+    // Remove from old contact and update user summary
     if (beforeContactId) {
-      await incrementContactBalance(db, userId, beforeData, -1);
+      await Promise.all([
+        incrementContactBalance(db, userId, beforeData, -1),
+        updateUserFinancialSummary(db, userId, beforeData, -1)
+      ]);
     }
 
-    // Add to new contact
+    // Add to new contact and update user summary
     if (afterContactId) {
-      await incrementContactBalance(db, userId, afterData, 1);
+      await Promise.all([
+        incrementContactBalance(db, userId, afterData, 1),
+        updateUserFinancialSummary(db, userId, afterData, 1)
+      ]);
     }
     return;
   }
@@ -172,10 +228,24 @@ async function handleTransactionUpdate(
     const beforeIsGiven = beforeData.isGiven;
     const afterIsGiven = afterData.isGiven;
 
-    // Calculate the net change
+    // Calculate the net change for contact balance
     const beforeBalance = beforeIsGiven ? beforeAmount : -beforeAmount;
     const afterBalance = afterIsGiven ? afterAmount : -afterAmount;
     const netChange = afterBalance - beforeBalance;
+
+    // Calculate changes for user financial summary
+    const beforeGiven = beforeIsGiven ? beforeAmount : 0;
+    const afterGiven = afterIsGiven ? afterAmount : 0;
+    const givenChange = afterGiven - beforeGiven;
+
+    const beforeTaken = !beforeIsGiven ? beforeAmount : 0;
+    const afterTaken = !afterIsGiven ? afterAmount : 0;
+    const takenChange = afterTaken - beforeTaken;
+
+    const netBalanceChange = netChange; // Same as contact balance change
+
+    // Update both contact and user if there are changes
+    const promises: Promise<void>[] = [];
 
     if (netChange !== 0) {
       logger.info(
@@ -183,16 +253,42 @@ async function handleTransactionUpdate(
       );
 
       const contactRef = db.doc(`users/${userId}/contacts/${afterContactId}`);
-      await contactRef.update({
-        balance: admin.firestore.FieldValue.increment(netChange),
-        lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      logger.info(
-        `✅ Successfully updated balance for contact ${afterContactId} by ${netChange}`
+      promises.push(
+        contactRef.update({
+          balance: admin.firestore.FieldValue.increment(netChange),
+          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+        }).then(() => {
+          logger.info(
+            `✅ Successfully updated balance for contact ${afterContactId} by ${netChange}`
+          );
+        })
       );
+    }
+
+    if (givenChange !== 0 || takenChange !== 0 || netBalanceChange !== 0) {
+      logger.info(
+        `💰 Updating user ${userId} financial summary - given: ${givenChange}, taken: ${takenChange}, net: ${netBalanceChange}`
+      );
+
+      const userRef = db.doc(`users/${userId}`);
+      promises.push(
+        userRef.update({
+          totalGiven: admin.firestore.FieldValue.increment(givenChange),
+          totalTaken: admin.firestore.FieldValue.increment(takenChange),
+          netBalance: admin.firestore.FieldValue.increment(netBalanceChange),
+          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+        }).then(() => {
+          logger.info(
+            `✅ Successfully updated user ${userId} financial summary`
+          );
+        })
+      );
+    }
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
     } else {
-      logger.info("➖ No balance change needed for this update");
+      logger.info("➖ No balance or financial summary changes needed for this update");
     }
   }
 }

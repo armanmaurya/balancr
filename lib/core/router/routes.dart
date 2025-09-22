@@ -7,4 +7,5 @@ class AppRoutes {
   static const String addContact = '/add_contact';
   static const String transaction = '/transaction';
   static const String transactionForm = '/transaction/form';
+  static const String searchLocalContact = '/search_local_contact';
 }

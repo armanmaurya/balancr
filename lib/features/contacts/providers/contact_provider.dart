@@ -7,7 +7,7 @@ import '../data/models/contact_model.dart';
 import '../data/repositories/contacts_repository_impl.dart';
 import '../domain/entities/contact_entity.dart';
 import '../domain/repositories/contacts_repository.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../user/providers/user_provider.dart';
 
 // Low-level dependencies
 final _firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);

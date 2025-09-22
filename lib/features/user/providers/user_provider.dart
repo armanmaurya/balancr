@@ -1,23 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../data/datasources/auth_remote_datasource.dart';
-import '../data/repositories/auth_repository_impl.dart';
+import '../data/repositories/user_repository_impl.dart';
 import '../domain/entities/user_entity.dart';
 import '../domain/repositories/auth_repository.dart';
-import '../../../services/firestore_user_service.dart';
 
 // Low-level dependencies
 final _firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 final _googleSignInProvider = Provider<GoogleSignIn>((ref) => GoogleSignIn());
-final _firestoreUserServiceProvider = Provider<FirestoreUserService>((ref) => FirestoreUserService());
+final _firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
 
 // Data source
 final _authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   return AuthRemoteDataSource(
     firebaseAuth: ref.watch(_firebaseAuthProvider),
     googleSignIn: ref.watch(_googleSignInProvider),
+    firestore: ref.watch(_firestoreProvider),
   );
 });
 
@@ -25,7 +26,6 @@ final _authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryImpl(
     remoteDataSource: ref.watch(_authRemoteDataSourceProvider),
-    firestoreUserService: ref.watch(_firestoreUserServiceProvider),
   );
 });
 
