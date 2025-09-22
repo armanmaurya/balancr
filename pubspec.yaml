@@ -52,7 +52,7 @@ dependencies:
   google_sign_in: ^6.2.2
   loading_animation_widget: ^1.3.0
   cloud_firestore: ^6.0.1
-  google_mobile_ads: ^6.0.0
+  firebase_messaging: ^16.0.2
 
 dev_dependencies:
   flutter_test:

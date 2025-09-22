@@ -8,7 +8,9 @@ import 'package:ledger_book_flutter/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
+import 'services/push_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,13 @@ Future<void> main() async {
   final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Register background handler BEFORE any messaging usage
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // Initialize push notifications
+  await PushNotificationService.instance.initialize();
+
   final isDark = await ThemeProvider.loadInitialIsDark();
   final initialLocale = await LanguageProvider.loadInitialLocale();
   runApp(
