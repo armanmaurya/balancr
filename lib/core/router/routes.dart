@@ -5,4 +5,6 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String language = '/settings/language';
   static const String addContact = '/add_contact';
+  static const String transaction = '/transaction';
+  static const String transactionForm = '/transaction/form';
 }

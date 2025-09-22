@@ -26,6 +26,9 @@ class ContactRemoteDataSource {
       'phone': contact.phone,
       'email': contact.email,
       'createdAt': FieldValue.serverTimestamp(),
+      'balance': contact.balance, // Initialize balance to 0
+      'isRegistered': contact.isRegistered,
+      'linkedUserId': contact.linkedUserId,
     });
   }
 

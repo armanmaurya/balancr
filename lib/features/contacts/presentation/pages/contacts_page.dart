@@ -53,7 +53,7 @@ class ContactsPage extends ConsumerWidget {
                   (context, index) {
                     final contact = contacts[index];
                     return ContactCard(
-                      person: contact,
+                      contact: contact,
                     );
                   },
                   childCount: contacts.length,

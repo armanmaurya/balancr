@@ -45,6 +45,29 @@ final contactsProvider = StreamProvider<List<ContactEntity>>((ref) {
           .toList());
 });
 
+// Get a specific contact by ID
+final contactByIdProvider = StreamProvider.family<ContactEntity?, String>((ref, contactId) {
+  final auth = ref.watch(_authProvider);
+  final user = auth.currentUser;
+  if (user == null) {
+    return Stream.value(null);
+  }
+
+  final firestore = ref.watch(_firestoreProvider);
+  return firestore
+      .collection('users')
+      .doc(user.uid)
+      .collection('contacts')
+      .doc(contactId)
+      .snapshots()
+      .map((snapshot) {
+        if (!snapshot.exists || snapshot.data() == null) {
+          return null;
+        }
+        return ContactModel.fromMap(snapshot.data()!, snapshot.id).toEntity();
+      });
+});
+
 // Commands: simple helpers for UI actions
 final deleteContactCommandProvider = FutureProvider.family<void, String>((ref, contactId) async {
   await ref.read(contactsRepositoryProvider).deleteContact(contactId);

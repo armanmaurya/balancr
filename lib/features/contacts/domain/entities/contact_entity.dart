@@ -5,6 +5,7 @@ class ContactEntity {
   final String? email;
   final bool isRegistered;
   final String? linkedUserId;
+  final num balance;
 
   ContactEntity({
     this.id,
@@ -13,5 +14,6 @@ class ContactEntity {
     this.email,
     this.isRegistered = false,
     this.linkedUserId,
+    this.balance = 0,
   });
 }

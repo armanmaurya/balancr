@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:ledger_book_flutter/models/transaction.dart';
+import 'package:intl/intl.dart';
+import '../../features/transaction/domain/entities/transaction_entity.dart';
 
 class TransactionCard extends StatelessWidget {
   const TransactionCard({
     super.key,
     required this.tx,
-    required this.formattedTime,
     required this.onEdit,
   });
 
-  final Transaction tx;
-  final String formattedTime;
+  final TransactionEntity tx;
   final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
+    final formattedDate = DateFormat('dd MMM yyyy').format(tx.date);
+    final formattedTime = DateFormat('hh:mm a').format(tx.date);
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       elevation: 2,
@@ -29,7 +31,7 @@ class TransactionCard extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          '${tx.formattedDate}  $formattedTime\n${tx.note}',
+          '$formattedDate  $formattedTime\n${tx.note}',
           style: const TextStyle(fontSize: 12),
         ),
         trailing: IconButton(

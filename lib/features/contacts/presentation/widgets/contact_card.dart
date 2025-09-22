@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ledger_book_flutter/core/router/routes.dart';
 import 'package:ledger_book_flutter/features/contacts/domain/entities/contact_entity.dart';
 import 'package:ledger_book_flutter/features/contacts/providers/contact_provider.dart';
 import 'package:ledger_book_flutter/widgets/modal_bottom_sheets/confirmation_bottom_sheet.dart';
-// import 'edit_contact_bottom_sheet.dart';
-import 'package:ledger_book_flutter/features/contacts/presentation/pages/contact_form_page.dart';
 
 class ContactCard extends ConsumerWidget {
-  const ContactCard({super.key, required this.person, this.onTap});
+  const ContactCard({super.key, required this.contact});
 
-  final ContactEntity person;
-  final VoidCallback? onTap;
+  final ContactEntity contact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +21,11 @@ class ContactCard extends ConsumerWidget {
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          context.push(
+            "${AppRoutes.transaction}/${contact.id}"
+          );
+        },
         borderRadius: BorderRadius.circular(12),
         splashColor: colorScheme.primary.withOpacity(0.1),
         highlightColor: colorScheme.primary.withOpacity(0.05),
@@ -41,7 +43,7 @@ class ContactCard extends ConsumerWidget {
                 ),
                 child: Center(
                   child: Text(
-                    _getInitials(person.name),
+                    _getInitials(contact.name),
                     style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.primary,
@@ -57,7 +59,7 @@ class ContactCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      person.name,
+                      contact.name,
                       style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -65,17 +67,13 @@ class ContactCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    // Uncomment if you want to show balance
-                    /*
                     Text(
-                      'Balance: ₹${person.balance.abs().toStringAsFixed(2)}',
+                      _getBalanceText(contact.balance.toDouble()),
                       style: textTheme.bodySmall?.copyWith(
-                        color: person.balance < 0 
-                            ? colorScheme.error 
-                            : colorScheme.primary,
+                        color: _getBalanceColor(contact.balance.toDouble(), colorScheme),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    */
                   ],
                 ),
               ),
@@ -105,6 +103,26 @@ class ContactCard extends ConsumerWidget {
     return name.length > 1
         ? name.substring(0, 2).toUpperCase()
         : name.padRight(2, ' ').toUpperCase();
+  }
+
+  String _getBalanceText(double balance) {
+    if (balance == 0) {
+      return 'No pending balance';
+    } else if (balance > 0) {
+      return 'You will get ₹${balance.abs().toStringAsFixed(2)}';
+    } else {
+      return 'You give ₹${balance.abs().toStringAsFixed(2)}';
+    }
+  }
+
+  Color _getBalanceColor(double balance, ColorScheme colorScheme) {
+    if (balance == 0) {
+      return colorScheme.onSurface.withOpacity(0.6);
+    } else if (balance > 0) {
+      return Colors.green.shade700;
+    } else {
+      return colorScheme.error;
+    }
   }
 
   void _showOptionsMenu(BuildContext context, WidgetRef ref) {
@@ -151,7 +169,7 @@ class ContactCard extends ConsumerWidget {
                           Navigator.pop(ctx);
                           Future.delayed(const Duration(milliseconds: 150), () {
                             context.push(
-                              "/add_contact?name=${Uri.encodeComponent(person.name)}&id=${Uri.encodeComponent(person.id!)}&email=${Uri.encodeComponent(person.email ?? '')}&phone=${Uri.encodeComponent(person.phone ?? '')}&isRegistered=${Uri.encodeComponent(person.isRegistered.toString())}&linkedUserId=${Uri.encodeComponent(person.linkedUserId ?? '')}",
+                              "/add_contact?name=${Uri.encodeComponent(contact.name)}&id=${Uri.encodeComponent(contact.id!)}&email=${Uri.encodeComponent(contact.email ?? '')}&phone=${Uri.encodeComponent(contact.phone ?? '')}&isRegistered=${Uri.encodeComponent(contact.isRegistered.toString())}&linkedUserId=${Uri.encodeComponent(contact.linkedUserId ?? '')}",
                             );
                           });
                         },
@@ -185,11 +203,11 @@ class ContactCard extends ConsumerWidget {
                               context: context,
                               title: 'Delete Contact',
                               message:
-                                  'Are you sure you want to delete ${person.name}? This action cannot be undone.',
+                                  'Are you sure you want to delete ${contact.name}? This action cannot be undone.',
                               onConfirm: () async {
                                 await ref
                                     .read(contactsRepositoryProvider)
-                                    .deleteContact(person.id!);
+                                    .deleteContact(contact.id!);
                               },
                             );
                           });

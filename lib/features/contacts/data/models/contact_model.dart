@@ -7,6 +7,7 @@ class ContactModel {
   final String? email;
   final bool isRegistered;
   final String? linkedUserId;
+  final num balance; // Default balance to 0
 
   ContactModel({
     required this.id,
@@ -15,6 +16,7 @@ class ContactModel {
     this.email,
     this.isRegistered = false,
     this.linkedUserId,
+    this.balance = 0,
   });
 
   /// Convert Firestore document to ContactModel
@@ -26,6 +28,7 @@ class ContactModel {
       email: map['email'],
       isRegistered: (map['isRegistered'] as bool?) ?? false,
       linkedUserId: map['linkedUserId'] as String?,
+      balance: map['balance'] ?? 0,
     );
   }
 
@@ -49,6 +52,7 @@ class ContactModel {
       email: email,
       isRegistered: isRegistered,
       linkedUserId: linkedUserId,
+      balance: balance,
     );
   }
 
@@ -61,6 +65,7 @@ class ContactModel {
       email: entity.email,
       isRegistered: entity.isRegistered,
       linkedUserId: entity.linkedUserId,
+      balance: entity.balance,
     );
   }
 }
