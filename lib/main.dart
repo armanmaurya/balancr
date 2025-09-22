@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ledger_book_flutter/core/router/app_router.dart';
-import 'package:ledger_book_flutter/providers/ledger_provider.dart';
 import 'package:ledger_book_flutter/providers/theme_provider.dart';
 import 'package:ledger_book_flutter/providers/language_provider.dart';
 import 'package:provider/provider.dart';

@@ -1,23 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ledger_book_flutter/core/router/routes.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
 import 'package:ledger_book_flutter/l10n/app_localizations.dart';
-import 'package:ledger_book_flutter/services/firestore_user_service.dart';
+import 'package:ledger_book_flutter/features/auth/presentation/providers/auth_provider.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  // Reuse a single instance
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+class _LoginPageState extends ConsumerState<LoginPage> {
   bool _loading = false;
   String? _error;
 
@@ -26,69 +23,23 @@ class _LoginPageState extends State<LoginPage> {
       _loading = true;
       _error = null;
     });
+    
     try {
-      // Always show the account chooser by clearing any cached account
-      // (prevents auto-selecting the previously used account)
-      await _googleSignIn.signOut();
-      // Optionally revoke to ensure re-consent on some devices (ignore errors)
-      try { await _googleSignIn.disconnect(); } catch (_) {}
-
-      // Trigger the authentication flow
-      final googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        // user aborted
-        if (mounted) {
-          setState(() {
-            _error = 'Sign-in cancelled';
-          });
-        }
-        return;
-      }
-
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      // Upsert user document in Firestore
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          await FirestoreUserService().upsertUser(user);
-        }
-      } catch (e, st) {
-        // ignore: avoid_print
-        print('Failed to upsert Firestore user: $e\n$st');
-      }
+      await ref.read(authRepositoryProvider).signInWithGoogle();
       if (!mounted) return;
       context.go(AppRoutes.contacts);
-    } on FirebaseAuthException catch (e) {
-      if (mounted) setState(() => _error = e.message ?? e.code);
-      // ignore: avoid_print
-      print('FirebaseAuthException: code=${e.code}, message=${e.message}, email=${e.email}, credential=${e.credential}');
-    } on PlatformException catch (e, st) {
-      // Common cause on Android: ApiException 10 (DEVELOPER_ERROR)
-      final isDevError = e.code == 'sign_in_failed' && (e.message?.contains('ApiException: 10') ?? false);
-      if (mounted) {
-        setState(() => _error = isDevError
-            ? 'Google Sign-In configuration error (code 10). Please add your debug SHA-1/SHA-256 to Firebase and replace google-services.json.'
-            : 'Google Sign-In failed: ${e.message ?? e.code}');
-      }
-      // ignore: avoid_print
-      print('PlatformException during Google sign-in: code=${e.code}, message=${e.message}, details=${e.details}\n$st');
-    } on Exception catch (e, st) {
-      // PlatformException or others
-      if (mounted) setState(() => _error = e.toString());
-      // ignore: avoid_print
-      print('Sign-in error: $e\n$st');
     } catch (e) {
-      if (mounted) setState(() => _error = 'Sign-in failed. Please try again.');
-      // ignore: avoid_print
-      print('Unknown sign-in error: $e');
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+        });
+      }
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
