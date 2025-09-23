@@ -16,9 +16,9 @@ class AuthRepositoryImpl implements AuthRepository {
       final userModel = await _remoteDataSource.signInWithGoogle();
       if (userModel == null) return null;
 
-      // Upsert user to Firestore using data source
+      // Smart upsert user to Firestore (creates with defaults for new users)
       final userEntity = userModel.toEntity();
-      await _remoteDataSource.upsertUser(userEntity);
+      await _remoteDataSource.smartUpsertUser(userEntity);
 
       return userEntity;
     } catch (e) {

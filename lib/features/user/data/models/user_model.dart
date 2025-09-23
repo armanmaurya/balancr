@@ -78,6 +78,7 @@ class UserModel extends UserEntity {
   }
 
   /// Convert UserModel to Firestore document for update
+  /// Note: Balance fields are excluded as they're managed server-side
   Map<String, dynamic> toFirestoreForUpdate() {
     return {
       'uid': uid,
@@ -86,9 +87,8 @@ class UserModel extends UserEntity {
       'photoURL': photoURL,
       'provider': provider,
       'lastSignIn': FieldValue.serverTimestamp(),
-      'totalGiven': totalGiven,
-      'totalTaken': totalTaken,
-      'netBalance': netBalance,
+      // Balance fields (totalGiven, totalTaken, netBalance) are excluded
+      // as they cannot be updated by client code per security rules
     };
   }
 

@@ -1,16 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:ledger_book_flutter/providers/theme_provider.dart';
 import 'package:ledger_book_flutter/providers/language_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ledger_book_flutter/core/router/routes.dart';
 import 'package:ledger_book_flutter/l10n/app_localizations.dart';
+import 'package:ledger_book_flutter/features/user/presentation/providers/auth_provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
-  Future<void> _signOut(BuildContext context) async {
+  Future<void> _signOut(BuildContext context, WidgetRef ref) async {
     // Show confirmation dialog before signing out
     final shouldSignOut = await showDialog<bool>(
       context: context,
@@ -31,19 +32,28 @@ class SettingsPage extends StatelessWidget {
     );
 
     if (shouldSignOut == true) {
-      await FirebaseAuth.instance.signOut();
-      if (context.mounted) {
-        // Navigate to login after signing out
-        context.go(AppRoutes.login);
+      try {
+        await ref.read(authRepositoryProvider).signOut();
+        if (context.mounted) {
+          // Navigate to login after signing out
+          context.go(AppRoutes.login);
+        }
+      } catch (e) {
+        // Handle error
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Sign out failed: $e')),
+          );
+        }
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final themeProvider = context.watch<ThemeProvider>();
     final languageProvider = context.watch<LanguageProvider>();
-  final user = FirebaseAuth.instance.currentUser;
+    final user = ref.watch(currentUserProvider);
 
     final t = AppLocalizations.of(context)!;
     return Scaffold(
@@ -184,7 +194,7 @@ class SettingsPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: FilledButton.icon(
-              onPressed: () => _signOut(context),
+              onPressed: () => _signOut(context, ref),
               icon: const Icon(Icons.logout),
               label: Text(t.signOut),
               style: FilledButton.styleFrom(

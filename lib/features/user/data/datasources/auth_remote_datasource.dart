@@ -81,14 +81,45 @@ class AuthRemoteDataSource {
     return _firestore.collection('users').doc(userId).snapshots();
   }
 
+  /// Create or update user profile information (excluding balance fields)
   Future<void> upsertUser(UserEntity user) async {
     await _firestore.collection('users').doc(user.uid).set({
       'email': user.email,
       'displayName': user.displayName,
       'photoURL': user.photoURL,
-      'totalGiven': user.totalGiven,
-      'totalTaken': user.totalTaken,
-      'netBalance': user.netBalance,
+      // Note: totalGiven, totalTaken, and netBalance are managed server-side
+      // and cannot be directly updated by client code per security rules
     }, SetOptions(merge: true));
+  }
+
+  /// Create initial user document with default balance values (for new users only)
+  Future<void> createUserWithDefaults(UserEntity user) async {
+    await _firestore.collection('users').doc(user.uid).set({
+      'email': user.email,
+      'displayName': user.displayName,
+      'photoURL': user.photoURL,
+      'totalGiven': 0.0,
+      'totalTaken': 0.0,
+      'netBalance': 0.0,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Check if user document exists
+  Future<bool> userExists(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return doc.exists;
+  }
+
+  /// Smart upsert - creates new user with defaults or updates existing user profile
+  Future<void> smartUpsertUser(UserEntity user) async {
+    final exists = await userExists(user.uid);
+    if (exists) {
+      // User exists, just update profile info
+      await upsertUser(user);
+    } else {
+      // New user, create with default balance values
+      await createUserWithDefaults(user);
+    }
   }
 }

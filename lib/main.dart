@@ -23,9 +23,6 @@ Future<void> main() async {
   // Register background handler BEFORE any messaging usage
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  // Initialize push notifications
-  await PushNotificationService.instance.initialize();
-
   final isDark = await ThemeProvider.loadInitialIsDark();
   final initialLocale = await LanguageProvider.loadInitialLocale();
   runApp(
