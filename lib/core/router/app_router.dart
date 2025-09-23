@@ -4,6 +4,8 @@ import 'package:ledger_book_flutter/features/user/presentation/pages/login_page.
 import 'package:ledger_book_flutter/features/splash/presentation/pages/splash_page.dart';
 import 'package:ledger_book_flutter/features/settings/presentation/pages/settings_page.dart';
 import 'package:ledger_book_flutter/features/settings/presentation/pages/language_page.dart';
+import 'package:ledger_book_flutter/features/user/presentation/pages/profile_page.dart';
+import 'package:ledger_book_flutter/features/user/presentation/pages/edit_profile_page.dart';
 import 'package:ledger_book_flutter/features/transaction/presentation/pages/transaction_form_page.dart';
 import 'package:ledger_book_flutter/screens/search_person.dart';
 import '../../features/contacts/presentation/pages/contact_form_page.dart';
@@ -38,6 +40,18 @@ class AppRouter {
         path: AppRoutes.settings,
         pageBuilder: (context, state) {
           return CupertinoPage(key: state.pageKey, child: const SettingsPage());
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        pageBuilder: (context, state) {
+          return CupertinoPage(key: state.pageKey, child: const ProfilePage());
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        pageBuilder: (context, state) {
+          return CupertinoPage(key: state.pageKey, child: const EditProfilePage());
         },
       ),
       GoRoute(

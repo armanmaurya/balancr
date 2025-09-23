@@ -3,6 +3,8 @@ class AppRoutes {
   static const String login = '/login';
   static const String splash = '/splash';
   static const String settings = '/settings';
+  static const String profile = '/settings/profile';
+  static const String editProfile = '/settings/profile/edit';
   static const String language = '/settings/language';
   static const String addContact = '/add_contact';
   static const String transaction = '/transaction';

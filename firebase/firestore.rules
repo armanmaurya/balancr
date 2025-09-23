@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users collection
+    match /users/{userId} {
+      
+      // A user can read their own user document
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Allow creating their own user doc
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Allow updating their own user doc
+      // Prevent direct writes to balances (totalGiven, totalTaken, netBalance)
+      allow update: if request.auth != null 
+                    && request.auth.uid == userId
+                    && !('totalGiven' in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('totalTaken' in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('netBalance' in request.resource.data.diff(resource.data).affectedKeys());
+
+      // Contacts subcollection
+      match /contacts/{contactId} {
+        allow create, read, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Transactions subcollection
+      match /transactions/{transactionId} {
+        allow create, read, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Notifications subcollection
+      match /notifications/{notificationId} {
+        // Only the user can read their notifications
+        allow read: if request.auth != null && request.auth.uid == userId;
+
+        // Only Cloud Functions (server) can create notifications
+        allow create: if request.auth.token.admin == true;
+
+        // Users can mark notifications as read (update 'isRead' only)
+        allow update: if request.auth != null
+                      && request.auth.uid == userId
+                      && request.resource.data.keys().hasOnly(['isRead']);
+
+        // Users cannot delete notifications
+        allow delete: if false;
+      }
+
+      // FCM tokens subcollection
+      match /fcmTokens/{tokenId} {
+        // Only the user can create/update/delete their own tokens
+        allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+
+        // Only the user can read their tokens
+        allow read: if request.auth != null && request.auth.uid == userId;
+      }
+
+    }
+  }
+}

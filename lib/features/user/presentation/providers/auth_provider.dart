@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledger_book_flutter/features/user/domain/entities/user_entity.dart';
 import 'package:ledger_book_flutter/features/user/domain/repositories/auth_repository.dart';
 import 'package:ledger_book_flutter/features/user/data/repositories/user_repository_impl.dart';
-import 'package:ledger_book_flutter/features/user/data/datasources/auth_remote_datasource.dart';
+import 'package:ledger_book_flutter/features/user/data/datasources/user_remote_datasource.dart';
 import 'package:ledger_book_flutter/features/user/data/models/user_model.dart';
 
 // Data source providers

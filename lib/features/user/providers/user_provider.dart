@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../data/datasources/auth_remote_datasource.dart';
+import '../data/datasources/user_remote_datasource.dart';
 import '../data/repositories/user_repository_impl.dart';
 import '../domain/entities/user_entity.dart';
 import '../domain/repositories/auth_repository.dart';

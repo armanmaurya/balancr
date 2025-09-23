@@ -102,7 +102,7 @@ class SettingsPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.outline,
                 ),
                 onTap: () {
-                  // Navigate to profile edit page
+                  context.push(AppRoutes.profile);
                 },
               ),
             ],

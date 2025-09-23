@@ -3,6 +3,7 @@ class UserEntity {
   final String? email;
   final String? displayName;
   final String? photoURL;
+  final String? phone;
   final String provider;
   final DateTime? createdAt;
   final DateTime? lastSignIn;
@@ -15,6 +16,7 @@ class UserEntity {
     this.email,
     this.displayName,
     this.photoURL,
+    this.phone,
     required this.provider,
     this.createdAt,
     this.lastSignIn,
@@ -34,7 +36,7 @@ class UserEntity {
 
   @override
   String toString() {
-    return 'UserEntity(uid: $uid, email: $email, displayName: $displayName, provider: $provider, netBalance: $netBalance)';
+    return 'UserEntity(uid: $uid, email: $email, displayName: $displayName, phone: $phone, provider: $provider, netBalance: $netBalance)';
   }
 
   UserEntity copyWith({
@@ -42,6 +44,7 @@ class UserEntity {
     String? email,
     String? displayName,
     String? photoURL,
+    String? phone,
     String? provider,
     DateTime? createdAt,
     DateTime? lastSignIn,
@@ -54,6 +57,7 @@ class UserEntity {
       email: email ?? this.email,
       displayName: displayName ?? this.displayName,
       photoURL: photoURL ?? this.photoURL,
+      phone: phone ?? this.phone,
       provider: provider ?? this.provider,
       createdAt: createdAt ?? this.createdAt,
       lastSignIn: lastSignIn ?? this.lastSignIn,

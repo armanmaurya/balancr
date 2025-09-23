@@ -87,6 +87,7 @@ class AuthRemoteDataSource {
       'email': user.email,
       'displayName': user.displayName,
       'photoURL': user.photoURL,
+      'phone': user.phone,
       // Note: totalGiven, totalTaken, and netBalance are managed server-side
       // and cannot be directly updated by client code per security rules
     }, SetOptions(merge: true));
@@ -98,6 +99,7 @@ class AuthRemoteDataSource {
       'email': user.email,
       'displayName': user.displayName,
       'photoURL': user.photoURL,
+      'phone': user.phone,
       'totalGiven': 0.0,
       'totalTaken': 0.0,
       'netBalance': 0.0,
