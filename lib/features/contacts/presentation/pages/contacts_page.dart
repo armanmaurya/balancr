@@ -6,7 +6,6 @@ import 'package:ledger_book_flutter/features/contacts/presentation/widgets/conta
 import 'package:ledger_book_flutter/features/contacts/presentation/widgets/financial_overview_slivers.dart';
 
 import '../../../../core/router/routes.dart';
-import '../../../../screens/search_person.dart';
 import '../../providers/contact_provider.dart';
 
 class ContactsPage extends ConsumerWidget {

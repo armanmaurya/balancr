@@ -83,7 +83,7 @@ class UserModel extends UserEntity {
   }
 
   /// Convert UserModel to Firestore document for update
-  /// Note: Balance fields are excluded as they're managed server-side
+  /// Note: Balance fields are updated via transaction operations on the client
   Map<String, dynamic> toFirestoreForUpdate() {
     return {
       'uid': uid,

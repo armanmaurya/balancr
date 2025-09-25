@@ -18,7 +18,9 @@ admin.initializeApp();
 
 // Set global options with region (CRITICAL - must match Firestore region!)
 setGlobalOptions({ 
-  maxInstances: 1,
+  maxInstances: 2,
+  minInstances: 0,
+  concurrency: 10,
   region: 'asia-southeast1' // ← CHANGE THIS to match your Firestore region!
 });
 

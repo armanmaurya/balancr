@@ -24,11 +24,8 @@ class ContactRemoteDataSource {
     await colRef.add({
       'name': contact.name,
       'phone': contact.phone,
-      'email': contact.email,
       'createdAt': FieldValue.serverTimestamp(),
-      'balance': contact.balance, // Initialize balance to 0
-      'isRegistered': contact.isRegistered,
-      'linkedUserId': contact.linkedUserId,
+      'balance': contact.balance, // Maintained through transaction operations
     });
   }
 
@@ -71,17 +68,80 @@ class ContactRemoteDataSource {
     await docRef.update({
       'name': contact.name,
       'phone': contact.phone,
-      'email': contact.email,
+      // Balance updates occurs via transaction operations to keep totals consistent.
     });
   }
 
   /// Delete a contact
   Future<void> deleteContact(String contactId) async {
-    final docRef = firestore
-        .collection('users')
-        .doc(_uid)
-        .collection('contacts')
-        .doc(contactId);
-    await docRef.delete();
+    final uid = _uid;
+    final trimmedContactId = contactId.trim();
+    final userRef = firestore.collection('users').doc(uid);
+    final contactRef = userRef.collection('contacts').doc(trimmedContactId);
+    final transactionsQuery = await userRef
+        .collection('transactions')
+        .where('toContactId', isEqualTo: trimmedContactId)
+        .get();
+
+    double totalGivenDelta = 0.0;
+    double totalTakenDelta = 0.0;
+    double netBalanceDelta = 0.0;
+
+    WriteBatch batch = firestore.batch();
+    int opsInBatch = 0;
+
+    Future<void> flushBatch() async {
+      if (opsInBatch == 0) return;
+      await batch.commit();
+      batch = firestore.batch();
+      opsInBatch = 0;
+    }
+
+    Future<void> queueDelete(DocumentReference<Map<String, dynamic>> ref) async {
+      if (opsInBatch >= 450) {
+        await flushBatch();
+      }
+      batch.delete(ref);
+      opsInBatch++;
+    }
+
+    await queueDelete(contactRef);
+
+    for (final doc in transactionsQuery.docs) {
+      await queueDelete(doc.reference);
+
+      final data = doc.data();
+      final rawAmount = data['amount'];
+      final amount = rawAmount is num
+          ? rawAmount.toDouble()
+          : double.tryParse(rawAmount?.toString() ?? '') ?? 0.0;
+      final isGiven = (data['isGiven'] as bool?) ?? false;
+      final signedAmount = isGiven ? amount : -amount;
+
+      if (isGiven) {
+        totalGivenDelta -= amount;
+      } else {
+        totalTakenDelta -= amount;
+      }
+      netBalanceDelta -= signedAmount;
+    }
+
+    final userUpdate = <String, dynamic>{
+      'lastUpdated': FieldValue.serverTimestamp(),
+      if (totalGivenDelta != 0.0)
+        'totalGiven': FieldValue.increment(totalGivenDelta),
+      if (totalTakenDelta != 0.0)
+        'totalTaken': FieldValue.increment(totalTakenDelta),
+      if (netBalanceDelta != 0.0)
+        'netBalance': FieldValue.increment(netBalanceDelta),
+    };
+
+    if (opsInBatch >= 450) {
+      await flushBatch();
+    }
+    batch.set(userRef, userUpdate, SetOptions(merge: true));
+    opsInBatch++;
+
+    await flushBatch();
   }
 }

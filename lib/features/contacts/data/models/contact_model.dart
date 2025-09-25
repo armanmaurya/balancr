@@ -4,18 +4,12 @@
     final String id;
     final String name;
     final String? phone;
-    final String? email;
-    final bool isRegistered;
-    final String? linkedUserId;
     final num balance; // Default balance to 0
 
     ContactModel({
       required this.id,
       required this.name,
       this.phone,
-      this.email,
-      this.isRegistered = false,
-      this.linkedUserId,
       this.balance = 0,
     });
 
@@ -25,9 +19,6 @@
         id: docId,
         name: map['name'] ?? '',
         phone: map['phone'],
-        email: map['email'],
-        isRegistered: (map['isRegistered'] as bool?) ?? false,
-        linkedUserId: map['linkedUserId'] as String?,
         balance: map['balance'] ?? 0,
       );
     }
@@ -37,9 +28,6 @@
       return {
         'name': name,
         'phone': phone,
-        'email': email,
-        'isRegistered': isRegistered,
-        'linkedUserId': linkedUserId,
       };
     }
 
@@ -49,9 +37,6 @@
         id: id,
         name: name,
         phone: phone,
-        email: email,
-        isRegistered: isRegistered,
-        linkedUserId: linkedUserId,
         balance: balance,
       );
     }
@@ -62,9 +47,6 @@
         id: entity.id ?? '',
         name: entity.name,
         phone: entity.phone,
-        email: entity.email,
-        isRegistered: entity.isRegistered,
-        linkedUserId: entity.linkedUserId,
         balance: entity.balance,
       );
     }

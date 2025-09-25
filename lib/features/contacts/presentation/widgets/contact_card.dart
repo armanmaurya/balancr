@@ -169,7 +169,7 @@ class ContactCard extends ConsumerWidget {
                           Navigator.pop(ctx);
                           Future.delayed(const Duration(milliseconds: 150), () {
                             context.push(
-                              "/add_contact?name=${Uri.encodeComponent(contact.name)}&id=${Uri.encodeComponent(contact.id!)}&email=${Uri.encodeComponent(contact.email ?? '')}&phone=${Uri.encodeComponent(contact.phone ?? '')}&isRegistered=${Uri.encodeComponent(contact.isRegistered.toString())}&linkedUserId=${Uri.encodeComponent(contact.linkedUserId ?? '')}",
+                              "/add_contact?name=${Uri.encodeComponent(contact.name)}&id=${Uri.encodeComponent(contact.id!)}&phone=${Uri.encodeComponent(contact.phone ?? '')} ?? '')}",
                             );
                           });
                         },

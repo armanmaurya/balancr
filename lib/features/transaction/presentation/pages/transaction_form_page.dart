@@ -312,6 +312,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
         Navigator.of(context).pop();
       }
     } catch (e) {
+      print(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

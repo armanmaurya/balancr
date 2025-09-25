@@ -77,22 +77,6 @@ class _AddContactPageState extends ConsumerState<AddContactPage> {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                hintText: 'Email (optional)',
-                prefixIcon: const Icon(Icons.email),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 14,
-                  horizontal: 16,
-                ),
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            TextField(
               controller: phoneController,
               decoration: InputDecoration(
                 hintText: 'Phone (optional)',
@@ -116,7 +100,6 @@ class _AddContactPageState extends ConsumerState<AddContactPage> {
                     : () async {
                         final name = nameController.text.trim();
                         final phone = phoneController.text.trim();
-                        final email = emailController.text.trim();
                         if (name.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Please enter a name')),
@@ -130,9 +113,6 @@ class _AddContactPageState extends ConsumerState<AddContactPage> {
                               id: widget.id!,
                               name: name,
                               phone: phone.isEmpty ? null : phone,
-                              email: email.isEmpty ? null : email,
-                              isRegistered: widget.isRegistered ?? false,
-                              linkedUserId: widget.linkedUserId,
                             );
                             await ref.read(contactsRepositoryProvider).updateContact(entity);
                           } else {
@@ -140,7 +120,6 @@ class _AddContactPageState extends ConsumerState<AddContactPage> {
                               id: "",
                               name: name,
                               phone: phone.isEmpty ? null : phone,
-                              email: email.isEmpty ? null : email,
                             );
                             await ref.read(contactsRepositoryProvider).addContact(entity);
                           }
